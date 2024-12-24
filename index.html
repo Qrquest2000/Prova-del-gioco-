@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gioco QR Code - Scansiona il Primo Codice</title>
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2196F3;
+            color: white;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        #qr-reader {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 30px;
+            height: 300px;
+            background-color: #333;
+        }
+
+        #checklist {
+            list-style-type: none;
+            padding: 0;
+            text-align: left;
+            margin-top: 20px;
+            display: none;
+        }
+
+        #checklist li {
+            margin: 10px 0;
+            font-size: 1.2rem;
+        }
+
+        #checklist li.complete {
+            color: green;
+            text-decoration: line-through;
+        }
+
+        .link-container {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .link-container a {
+            color: white;
+            font-size: 1.2rem;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Scansiona il Primo QR Code</h1>
+
+    <!-- Scanner QR -->
+    <div id="qr-reader"></div>
+
+    <!-- Checklist di avanzamento -->
+    <ul id="checklist">
+        <li id="check1">Scansionato il primo QR Code</li>
+    </ul>
+
+    <!-- Bottone per proseguire al passo successivo -->
+    <div class="link-container">
+        <p>Hai completato il primo passo! Vai al prossimo QR Code:</p>
+        <a href="#" id="nextLink">Secondo QR Code</a>
+    </div>
+
+    <script>
+        // Funzione che gestisce la scansione del QR code
+        function onScanSuccess(decodedText, decodedResult) {
+            console.log(`QR Code scansionato: ${decodedText}`);
+            
+            // Verifica se il QR code scansionato è corretto
+            if (decodedText === "https://tuosito.com/step1.html") {
+                document.getElementById("checklist").style.display = "block";
+                document.getElementById("check1").classList.add("complete");
+
+                // Mostra il link per il prossimo QR Code
+                document.querySelector(".link-container").style.display = "block";
+                document.getElementById("nextLink").href = "https://tuosito.com/step2.html";
+            } else {
+                alert("QR code non valido. Riprova.");
+            }
+        }
+
+        function onScanError(errorMessage) {
+            console.log("Errore nella scansione: ", errorMessage);
+        }
+
+        // Funzione che inizializza il lettore di QR code
+        function startScanner() {
+            const scanner = new Html5QrcodeScanner("qr-reader", {
+                fps: 10,
+                qrbox: 250
+            });
+
+            // Avvia la scansione
+            scanner.render(onScanSuccess, onScanError);
+        }
+
+        // Verifica se il browser supporta la fotocamera
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            // Inizializza il lettore QR quando la pagina è pronta
+            window.onload = function() {
+                startScanner();
+            };
+        } else {
+            alert("Il tuo browser non supporta l'accesso alla fotocamera.");
+        }
+    </script>
+
+</body>
+</html>
